@@ -19,7 +19,6 @@ class TaskCLI(cmd.Cmd):
                  stdin = None, 
                  stdout = None):
         super().__init__(completekey, stdin, stdout)
-        self.manager = TaskManager()
 
     def do_help(self, 
                 arg: str
@@ -35,6 +34,7 @@ class TaskCLI(cmd.Cmd):
                 print(f"No help available for '{arg}'.")
         else:
             # Default behavior to show available commands
+            # In case of mark_* replace '_' with '-'
             print("Available commands:")
             for name in self.get_names():
                 if "do_" == name[:3]:
@@ -53,12 +53,14 @@ class TaskCLI(cmd.Cmd):
                 line: str
                 ) -> None:
         """Handle unrecognized commands."""
-        if "mark" in line:
-            method_name = "do_" + line.replace("-", "_")
-            method = getattr(self, method_name, None)
-            if method:
-                method(line)
-                return
+        if ("mark-in-progress" in line):
+            new_line = line.replace('-', '_', 2)
+            self.onecmd(new_line)
+            return
+        elif ("mark-done" in line):
+            new_line = line.replace('-', '_', 1)
+            self.onecmd(new_line)
+            return
         print(f"Unknown command: {line}. Type 'help' for a list of commands.")
 
     # Main functionalities
@@ -156,10 +158,21 @@ class TaskCLI(cmd.Cmd):
         else:
             print("Usage list <'todo' | 'in-progress' | 'done' | ''>")
 
+    # Post loop
+    def postloop(self):
+        self.manager.dumpTasks()
+        return super().postloop()
+    
+    # Pre loop
+    def preloop(self):
+        self.manager = TaskManager()
+        return super().preloop()
+
 
 
 def main():
-    TaskCLI().cmdloop()
+    taskCLI = TaskCLI()
+    taskCLI.cmdloop()
 
 if __name__ == "__main__":
     main()
