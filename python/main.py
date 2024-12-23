@@ -25,13 +25,9 @@ class TaskCLI(cmd.Cmd):
                 ) -> None:
         """Override help command to display custom help."""
         if arg:
-            # Show custom help for a specific command
-            method_name = "help_" + arg.replace("-", "_")
-            method = getattr(self, method_name, None)
-            if method:
-                method()
-            else:
-                print(f"No help available for '{arg}'.")
+            if ("mark-done" in arg): arg = arg.replace('-', '_', 1)
+            elif ("mark-in-progress" in arg): arg = arg.replace('-', '_', 2)
+            super().do_help(arg)
         else:
             # Default behavior to show available commands
             # In case of mark_* replace '_' with '-'
@@ -62,6 +58,8 @@ class TaskCLI(cmd.Cmd):
             self.onecmd(new_line)
             return
         print(f"Unknown command: {line}. Type 'help' for a list of commands.")
+
+    # Handle mark-*
 
     # Main functionalities
 
