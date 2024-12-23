@@ -14,11 +14,16 @@ class TaskCLI(cmd.Cmd):
     intro = "Welcome to the Task Tracking CLI. Type help or ? to list commands.\n"
     prompt = "task-cli "
 
-    def __init__(self, completekey = "tab", stdin = None, stdout = None):
+    def __init__(self, 
+                 completekey = "tab", 
+                 stdin = None, 
+                 stdout = None):
         super().__init__(completekey, stdin, stdout)
         self.manager = TaskManager()
 
-    def do_help(self, arg):
+    def do_help(self, 
+                arg: str
+                ) -> None:
         """Override help command to display custom help."""
         if arg:
             # Show custom help for a specific command
@@ -39,12 +44,14 @@ class TaskCLI(cmd.Cmd):
                     else:
                         print(f"- {command}")
     
-    def do_exit(self, _):
+    def do_exit(self, _) -> None:
         """Exit the application"""
         print("Goodbye!")
         return True
 
-    def default(self, line):
+    def default(self, 
+                line: str
+                ) -> None:
         """Handle unrecognized commands."""
         if "mark" in line:
             method_name = "do_" + line.replace("-", "_")
@@ -56,7 +63,9 @@ class TaskCLI(cmd.Cmd):
 
     # Main functionalities
 
-    def do_add(self, arg):
+    def do_add(self, 
+               arg: str
+               ) -> None:
         """Add a new task: add <task_description>"""
         if arg:
             task = self.manager.add(arg)
@@ -150,7 +159,6 @@ class TaskCLI(cmd.Cmd):
 
 
 def main():
-    # print('Hello, world!')
     TaskCLI().cmdloop()
 
 if __name__ == "__main__":
