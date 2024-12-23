@@ -1,5 +1,5 @@
 from time import strftime, localtime
-from status import TaskState
+from TaskTracker.status import TaskState
 
 class Task(object):
    def __init__(
