@@ -81,7 +81,7 @@ class TaskManager(object):
             self,
             fn: Callable[[Task], bool],
             ) -> None:
-        for task in filter(self.taskQueue, fn): print(task)
+        for task in list(filter(fn, self.taskQueue)): print(task)
 
     def listDoneTask(self) -> None:
         self._listTaskWithFilter(lambda task: task.status == TaskState.DONE)
@@ -91,6 +91,9 @@ class TaskManager(object):
         
     def listTodoTask(self) -> None:
         self._listTaskWithFilter(lambda task: task.status == TaskState.TODO)
+
+    def listAllTask(self) -> None:
+        self._listTaskWithFilter(lambda _: True)
 
     def dumpTasks(self) -> None:
         dumpTasks(self.taskPath, self.taskQueue)
