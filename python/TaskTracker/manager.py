@@ -1,18 +1,25 @@
 from typing import Callable, Union
 from TaskTracker.task import Task
 from TaskTracker.status import TaskState
+from TaskTracker.utils import loadTasks, dumpTasks
 
 class TaskManager(object):
     def __init__(
             self,
-            home: str = "./"
+            taskPath: str = "./task.json"
             ):
+        self.taskPath = taskPath
         self.taskQueue: list[Task] = []
         self.taskCount: int = 1
+        self._initializeTasks()
 
 
     def _initializeTasks(self) -> None:
-        pass
+        self.taskQueue = loadTasks(self.taskPath)
+        if (len(self.taskQueue) == 0):
+            self.taskCount = 1
+        else:
+            self.taskCount = max(self.taskQueue, key=lambda task: task.id).id + 1
 
     def add(self,
             description: str
@@ -26,7 +33,7 @@ class TaskManager(object):
                taskId: int,
                description: str
                ) -> Union[Task, None]:
-        tasks = filter(lambda task : task.id == taskId, self.taskQueue)
+        tasks = list(filter(lambda task : task.id == taskId, self.taskQueue))
         if len(tasks) == 0: return None
         else:
             task = tasks[0]
@@ -84,3 +91,6 @@ class TaskManager(object):
         
     def listTodoTask(self) -> None:
         self._listTaskWithFilter(lambda task: task.status == TaskState.TODO)
+
+    def dumpTasks(self) -> None:
+        dumpTasks(self.taskPath, self.taskQueue)
