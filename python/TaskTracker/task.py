@@ -17,8 +17,12 @@ class Task(object):
       self.status = status
       if (not createdAt):
          self.createdAt = strftime("%a, %d %b %Y %H:%M", localtime())
+      else:
+         self.createdAt = createdAt
       if (not updatedAt):
          self.updatedAt = self.createdAt
+      else:
+         self.updatedAt = updatedAt
 
 
    def markInProgress(self) -> None:
@@ -53,5 +57,21 @@ class TaskJSONEncoder(json.JSONEncoder):
          }
       return super().default(obj)
    
+class TaskJSONDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, obj):
+        if "id" in obj and \
+           "status" in obj and \
+            "description" in obj and \
+            "createdAt" in obj and \
+            "updatedAt" in obj:
+            return Task(id=obj["id"], 
+                        status=obj["status"],
+                        description=obj["description"],
+                        createdAt=obj["createdAt"],
+                        updatedAt=obj["updatedAt"])
+        return obj
 
 
